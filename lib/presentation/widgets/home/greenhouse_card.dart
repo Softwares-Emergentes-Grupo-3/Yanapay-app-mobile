@@ -46,7 +46,16 @@ class GreenhouseCard extends StatelessWidget {
           child: PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, color: Colors.white, size: 20),
             onSelected: (value) {
-              // selccionar eliminar o editar
+              if (value == 'edit') {
+                showDialog(
+                  context: context,
+                  builder: (context) => _AddGreenhouseDialog(
+                    initialName: title,
+                    isEdit: true,
+                  ),
+                );
+              }
+              // TODO: VALIDAR SI SIRVE PARA ELIMIAR
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
@@ -71,6 +80,45 @@ class GreenhouseCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AddGreenhouseDialog extends StatelessWidget {
+  final String initialName;
+  final bool isEdit;
+
+  const _AddGreenhouseDialog({
+    required this.initialName,
+    required this.isEdit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(isEdit ? 'Editar Invernadero' : 'Agregar Invernadero'),
+      content: TextField(
+        controller: TextEditingController(text: initialName),
+        decoration: const InputDecoration(
+          labelText: 'Nombre del invernadero',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            // TODO: AGREGAR LOGICA PARA GUARDAR INVERNADERO
+            Navigator.of(context).pop();
+          },
+          child: Text(isEdit ? 'Guardar' : 'Agregar'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Cancelar'),
         ),
       ],
     );
