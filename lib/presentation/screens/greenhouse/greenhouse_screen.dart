@@ -72,24 +72,22 @@ class GreenhouseScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     // Humedad y temperatura centrados
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.water_drop,
-                            color: Color(0xFFB6E388), size: 20),
-                        SizedBox(width: 4),
-                        Text('95%',
+                        Icon(Icons.water_drop, color: colors.primary, size: 20),
+                        const SizedBox(width: 4),
+                        const Text('95%',
                             style: TextStyle(fontWeight: FontWeight.w600)),
-                        SizedBox(width: 24),
+                        const SizedBox(width: 24),
                         Icon(Icons.thermostat,
-                            color: Color(0xFFB6E388), size: 20),
-                        SizedBox(width: 4),
-                        Text('25° - 32°',
+                            color: colors.secondary, size: 20),
+                        const SizedBox(width: 4),
+                        const Text('25° - 32°',
                             style: TextStyle(fontWeight: FontWeight.w600)),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    // Status y Charge en dos líneas, valores alineados a la derecha
                     const Row(
                       children: [
                         Text('Status',
@@ -118,11 +116,11 @@ class GreenhouseScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               // Devices title
-              const Row(
+              Row(
                 children: [
-                  Icon(Icons.spa, color: Color(0xFF388E3C)),
-                  SizedBox(width: 8),
-                  Text('Devices',
+                  Icon(Icons.spa, color: colors.secondary),
+                  const SizedBox(width: 8),
+                  const Text('Devices',
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 ],
@@ -131,17 +129,16 @@ class GreenhouseScreen extends StatelessWidget {
               // Devices list
               Expanded(
                 child: ListView(
-                  children: const [
-                    _DeviceCard(name: 'XFDFDGS'),
-                    SizedBox(height: 12),
-                    _DeviceCard(name: 'fdf23-23948'),
-                    SizedBox(height: 24),
+                  children: [
+                    const _DeviceCard(name: 'XFDFDGS'),
+                    const SizedBox(height: 12),
+                    const _DeviceCard(name: 'fdf23-23948'),
+                    const SizedBox(height: 24),
                     Center(
                       child: CircleAvatar(
-                        backgroundColor: Color(0xFFE9F9D2),
+                        backgroundColor: const Color(0xFFE9F9D2),
                         radius: 28,
-                        child:
-                            Icon(Icons.add, color: Color(0xFFB6E388), size: 32),
+                        child: Icon(Icons.add, color: colors.primary, size: 32),
                       ),
                     ),
                   ],
@@ -178,7 +175,7 @@ class _DeviceCard extends StatelessWidget {
 }
 
 class _CustomGreenhouseBar extends StatelessWidget {
-  const _CustomGreenhouseBar({super.key});
+  const _CustomGreenhouseBar();
 
   @override
   Widget build(BuildContext context) {
