@@ -11,7 +11,7 @@ final appRouter = GoRouter(
         builder: (context, state) => const HomeScreen(),
         routes: [
           GoRoute(
-            path: '/camara-analysis',
+            path: 'camara-analysis',
             name: CamaraAnalysisScreen.name,
             builder: (context, state) => const CamaraAnalysisScreen(),
           ),
