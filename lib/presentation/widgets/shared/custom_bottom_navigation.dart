@@ -17,7 +17,6 @@ class CustomBottomNavigation extends StatelessWidget {
         context.goNamed(CamaraAnalysisScreen.name);
         break;
       case 2:
-      // Aquí podrías agregar tu pantalla de notificaciones
         context.go('/notifications');
         break;
     }
