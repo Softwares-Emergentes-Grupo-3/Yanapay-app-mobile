@@ -3,14 +3,14 @@ import 'package:yanapay_app_mobile/presentation/widgets/greenhouse/greenhouse_gr
 import 'package:yanapay_app_mobile/presentation/widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
-  static const name = 'home-screen';
+  static const String name = 'home-screen';
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       body: _HomeView(),
-      bottomNavigationBar: CustomBottomNavigation(),
+      bottomNavigationBar: CustomBottomNavigation(currentIndex: 0,),
     );
   }
 }
