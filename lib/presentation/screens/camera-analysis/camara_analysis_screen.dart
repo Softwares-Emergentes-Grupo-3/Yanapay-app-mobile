@@ -1,32 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:yanapay_app_mobile/presentation/widgets/shared/custom_bottom_navigation.dart';
 
 class CamaraAnalysisScreen extends StatelessWidget {
   static const String name = 'camara-analysis';
   const CamaraAnalysisScreen({super.key});
 
+  Future<void> _pickImageFromGallery(BuildContext context) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-  Future<void> _requestCameraPermission(BuildContext context) async {
-    final status = await Permission.camera.request();
-
-    if (status.isGranted) {
-      final ImagePicker picker = ImagePicker();
-      final XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
-
-      if (pickedFile != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Imagen seleccionada: ${pickedFile.name}')),
-        );
-        // Aquí puedes procesar la imagen
-      }
-    } else if (status.isDenied) {
+    if (pickedFile != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Permiso de cámara denegado')),
+        SnackBar(content: Text('Imagen seleccionada: ${pickedFile.name}')),
       );
-    } else if (status.isPermanentlyDenied) {
-      openAppSettings();
+      // Aquí puedes procesar la imagen
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se seleccionó ninguna imagen')),
+      );
     }
   }
 
@@ -41,7 +33,7 @@ class CamaraAnalysisScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: GestureDetector(
-                onTap: () => _requestCameraPermission(context),
+                onTap: () => _pickImageFromGallery(context),
                 child: Container(
                   height: 200,
                   decoration: BoxDecoration(
