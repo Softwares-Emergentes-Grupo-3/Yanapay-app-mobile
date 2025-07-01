@@ -55,28 +55,42 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: GestureDetector(
-                onTap: isImageSelected ? null: () => _pickImageFromGallery(context),
+                onTap: isImageSelected ? null : () => _pickImageFromGallery(context),
                 child: Container(
                   height: 200,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).primaryColor, width: 2),
+                    color: isImageSelected ? Colors.grey.shade200 : Colors.white,
+                    border: Border.all(
+                      color: isImageSelected
+                          ? Colors.grey
+                          : Theme.of(context).primaryColor,
+                      width: 2,
+                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.upload, size: 40, color: Theme.of(context).primaryColor),
+                        Icon(
+                          Icons.upload,
+                          size: 40,
+                          color: isImageSelected
+                              ? Colors.grey
+                              : Theme.of(context).primaryColor,
+                        ),
                         const SizedBox(height: 10),
-                        const Text(
+                        Text(
                           'Select an image to analyze',
-                          style: TextStyle(color: Colors.black87),
+                          style: TextStyle(
+                            color: isImageSelected ? Colors.grey : Colors.black87,
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
-              ),
+              )
             ),
             const SizedBox(height: 30),
             ElevatedButton(
