@@ -7,30 +7,6 @@ class CamaraAnalysisScreen extends StatelessWidget {
   static const String name = 'camara-analysis';
   const CamaraAnalysisScreen({super.key});
 
-  Future<void> _showPermissionModal(BuildContext context) async {
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Permiso de cámara'),
-        content: const Text(
-            'Necesitamos acceso a tu cámara para que puedas tomar una foto y analizarla.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Denegar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Permitir'),
-          ),
-        ],
-      ),
-    );
-
-    if (result == true) {
-      _requestCameraPermission(context);
-    }
-  }
 
   Future<void> _requestCameraPermission(BuildContext context) async {
     final status = await Permission.camera.request();
@@ -65,7 +41,7 @@ class CamaraAnalysisScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: GestureDetector(
-                onTap: () => _showPermissionModal(context),
+                onTap: () => _requestCameraPermission(context),
                 child: Container(
                   height: 200,
                   decoration: BoxDecoration(
