@@ -81,7 +81,7 @@ class _HomeView extends StatelessWidget {
                     children: [
                       Icon(Icons.cloud, size: 48, color: colors.primary),
                       const SizedBox(height: 4),
-                      Text('Cloudy',
+                      Text('Nublado',
                           style: TextStyle(
                               fontSize: 16,
                               color: colors.primary,
