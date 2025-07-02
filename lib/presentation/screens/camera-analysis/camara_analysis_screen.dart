@@ -251,6 +251,19 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
                   ),
                 ),
               ),
+              // Preview de la imagen seleccionada
+              if (isImageSelected)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(
+                      File(_pickedFile!.path),
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -305,8 +318,10 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
                     icon: Icon(Icons.delete_forever, color: isImageSelected ? Colors.white : Colors.grey),
                     label: Text(
                       'Eliminar imagen',
-                      style: TextStyle(color: isImageSelected ? Colors.white : Colors.grey,
-                          fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: isImageSelected ? Colors.white : Colors.grey,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
