@@ -237,8 +237,8 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
                           const SizedBox(height: 10),
                           Text(
                             isImageSelected
-                                ? 'Image selected'
-                                : 'Select an image to analyze',
+                                ? 'Imagen seleccionada'
+                                : 'Selecciona una imagen para analizar',
                             style: TextStyle(
                               color: isImageSelected
                                   ? Colors.grey
@@ -252,36 +252,66 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: (isImageSelected && !_imageSent && !_isUploading)
-                    ? () => _sendImage(context)
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: (isImageSelected && !_imageSent && !_isUploading)
-                      ? green
-                      : Colors.blueGrey.shade200,
-                  padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 10),
-                ),
-                child: _isUploading
-                    ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: (isImageSelected && !_imageSent && !_isUploading)
+                        ? () => _sendImage(context)
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: (isImageSelected && !_imageSent && !_isUploading)
+                          ? green
+                          : Colors.blueGrey.shade200,
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                    ),
+                    child: _isUploading
+                        ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                        : Text(
+                      _imageSent ? 'Imagen enviada' : 'Enviar imagen',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: (isImageSelected && !_imageSent && !_isUploading)
+                            ? Colors.white
+                            : Colors.grey,
+                      ),
+                    ),
                   ),
-                )
-                    : Text(
-                  _imageSent ? 'Image sent' : 'Send image',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: (isImageSelected && !_imageSent && !_isUploading)
-                        ? Colors.white
-                        : Colors.grey,
+                  const SizedBox(width: 10),
+                  ElevatedButton.icon(
+                    onPressed: isImageSelected
+                        ? () {
+                      setState(() {
+                        _pickedFile = null;
+                        _imageSent = false;
+                        _analysisResult = null;
+                        _analysisData = null;
+                      });
+                    }
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isImageSelected
+                          ? Colors.red.shade300
+                          : Colors.red.shade100,
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    ),
+                    icon: Icon(Icons.delete_forever, color: isImageSelected ? Colors.white : Colors.grey),
+                    label: Text(
+                      'Eliminar imagen',
+                      style: TextStyle(color: isImageSelected ? Colors.white : Colors.grey,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
+                ],
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: _imageSent
                     ? () async {
@@ -291,17 +321,17 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _imageSent ? green : Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 120, vertical: 5),
                 ),
                 child: Text(
-                  'View Analysis',
+                  'Ver análisis',
                   style: TextStyle(
                     color: _imageSent ? Colors.white : Colors.grey,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
             ],
           ),
         ),
