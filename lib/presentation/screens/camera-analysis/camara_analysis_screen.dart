@@ -254,12 +254,13 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
               // Preview de la imagen seleccionada
               if (isImageSelected)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  padding: const EdgeInsets.only(top: 20.0, left: 32.0, right: 32.0),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.file(
                       File(_pickedFile!.path),
                       height: 200,
+                      width: 320,
                       fit: BoxFit.cover,
                     ),
                   ),
