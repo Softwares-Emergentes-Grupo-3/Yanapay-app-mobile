@@ -66,8 +66,8 @@ class GreenhouseCard extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                colors.primary.withAlpha(220),
-                colors.tertiary.withGreen(200).withAlpha(200),
+                colors.primary.withRed(30).withGreen(100).withBlue(5).withAlpha(150),
+                colors.tertiary.withAlpha(185).withBlue(50).withRed(170),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,

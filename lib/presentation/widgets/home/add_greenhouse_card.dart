@@ -23,8 +23,8 @@ class AddGreenhouseCard extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              colors.primary.withAlpha(220),
-              colors.tertiary.withGreen(200).withAlpha(200),
+              colors.primary.withRed(30).withGreen(100).withBlue(0).withAlpha(150),
+              colors.tertiary.withAlpha(185).withBlue(50).withRed(170),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -66,8 +66,8 @@ class _AddGreenhouseDialog extends StatefulWidget {
 class _AddGreenhouseDialogState extends State<_AddGreenhouseDialog> {
   final _formKey = GlobalKey<FormState>();
   String? _name;
-  String? _date; // Formato para backend: yyyy-MM-dd
-  String? _dateDisplay; // Formato para usuario: dd/MM/yyyy
+  String? _date; // backend: yyyy-MM-dd
+  String? _dateDisplay; // interfaz: dd/MM/yyyy
 
   @override
   void initState() {
@@ -75,7 +75,7 @@ class _AddGreenhouseDialogState extends State<_AddGreenhouseDialog> {
     _name = widget.initialName;
     _date = widget.initialDate;
     if (_date != null && _date!.isNotEmpty) {
-      // Si viene en formato yyyy-MM-dd, convertir a dd/MM/yyyy
+      // conversion de fechas
       final parts = _date!.split('-');
       if (parts.length == 3) {
         _dateDisplay =
@@ -236,7 +236,6 @@ class _AddGreenhouseDialogState extends State<_AddGreenhouseDialog> {
                           borderRadius: BorderRadius.circular(8)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                      // En el método donde guardas el invernadero:
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();

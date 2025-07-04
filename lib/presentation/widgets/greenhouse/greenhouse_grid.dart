@@ -68,7 +68,6 @@ class _GreenhouseGridState extends State<GreenhouseGrid> {
         ),
         const SizedBox(height: 0),
 
-        // Mostramos grilla
         isLoading
             ? const Center(child: CircularProgressIndicator())
             : GridView.count(
@@ -79,14 +78,14 @@ class _GreenhouseGridState extends State<GreenhouseGrid> {
           crossAxisSpacing: 16,
           childAspectRatio: 1,
           children: [
-            // Invernaderos desde API
             ...greenhouses.map((gh) {
               return GestureDetector(
                 onTap: () {
+                  print('Invernadero seleccionado: ${gh.name}');
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) =>
-                          GreenhouseScreen(greenhouseId: gh.id),
+                          GreenhouseScreen(greenhouseId: gh.id, greenhouseName: gh.name),
                     ),
                   );
                 },
