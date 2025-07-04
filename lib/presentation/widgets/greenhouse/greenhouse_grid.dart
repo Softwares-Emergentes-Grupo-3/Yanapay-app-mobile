@@ -94,7 +94,7 @@ class _GreenhouseGridState extends State<GreenhouseGrid> {
               );
             }).toList(),
             // Tarjeta para agregar nuevo invernadero
-            const AddGreenhouseCard(),
+            AddGreenhouseCard(onGreenhouseAdded: fetchGreenhouses),
           ],
         ),
       ],
