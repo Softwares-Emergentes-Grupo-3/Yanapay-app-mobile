@@ -1,5 +1,5 @@
 class Greenhouse {
-  final String id;
+  final int id;
   final String name;
   final String plantingDate;
 
@@ -11,7 +11,7 @@ class Greenhouse {
 
   factory Greenhouse.fromJson(Map<String, dynamic> json) {
     return Greenhouse(
-      id: json['id'].toString(),
+      id: json['id'],
       name: json['name'],
       plantingDate: json['plantingDate'],
     );
