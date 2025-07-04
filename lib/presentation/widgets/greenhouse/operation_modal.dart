@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 class OperationsModal extends StatefulWidget {
-  final String greenhouseId;
+  final int greenhouseId;
   const OperationsModal({super.key, required this.greenhouseId});
 
   @override
