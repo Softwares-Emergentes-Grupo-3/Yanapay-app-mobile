@@ -66,7 +66,7 @@ class _GreenhouseGridState extends State<GreenhouseGrid> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 0),
 
         // Mostramos grilla
         isLoading
@@ -90,7 +90,7 @@ class _GreenhouseGridState extends State<GreenhouseGrid> {
                     ),
                   );
                 },
-                child: GreenhouseCard(title: gh.name),
+                child: GreenhouseCard(id: gh.id, title: gh.name, onRefresh: fetchGreenhouses,),
               );
             }).toList(),
             // Tarjeta para agregar nuevo invernadero

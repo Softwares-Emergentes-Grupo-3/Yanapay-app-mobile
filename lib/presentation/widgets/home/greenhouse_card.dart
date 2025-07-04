@@ -1,8 +1,61 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class GreenhouseCard extends StatelessWidget {
+  final String id;
   final String title;
-  const GreenhouseCard({super.key, required this.title});
+  final VoidCallback onRefresh;
+
+  const GreenhouseCard({
+    super.key,
+    required this.id,
+    required this.title,
+    required this.onRefresh,
+  });
+
+  Future<void> _deleteGreenhouse(BuildContext context) async {
+    final url = Uri.parse('http://172.203.140.239:8081/api/v1/greenhouses/$id');
+
+    final response = await http.delete(url);
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invernadero eliminado')),
+
+      );
+      print('Response: ${response.body}');
+      onRefresh();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al eliminar')),
+      );
+    }
+  }
+
+  Future<void> _editGreenhouse(
+      BuildContext context, String newName) async {
+    final url = Uri.parse('http://172.203.140.239:8081/api/v1/greenhouses');
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'id': int.parse(id),
+        'name': newName}),
+    );
+    print('Response: ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invernadero actualizado')),
+      );
+      onRefresh();
+    } else {
+      print('Error: ${response.statusCode} - ${response.body}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al editar')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +102,14 @@ class GreenhouseCard extends StatelessWidget {
               if (value == 'edit') {
                 showDialog(
                   context: context,
-                  builder: (context) => _AddGreenhouseDialog(
+                  builder: (context) => _EditDialog(
                     initialName: title,
-                    isEdit: true,
+                    onConfirm: (newName) => _editGreenhouse(context, newName),
                   ),
                 );
+              } else if (value == 'delete') {
+                _deleteGreenhouse(context);
               }
-              // TODO: VALIDAR SI SIRVE PARA ELIMIAR
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
@@ -86,21 +140,34 @@ class GreenhouseCard extends StatelessWidget {
   }
 }
 
-class _AddGreenhouseDialog extends StatelessWidget {
+class _EditDialog extends StatefulWidget {
   final String initialName;
-  final bool isEdit;
+  final Function(String newName) onConfirm;
 
-  const _AddGreenhouseDialog({
+  const _EditDialog({
     required this.initialName,
-    required this.isEdit,
+    required this.onConfirm,
   });
+
+  @override
+  State<_EditDialog> createState() => _EditDialogState();
+}
+
+class _EditDialogState extends State<_EditDialog> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialName);
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(isEdit ? 'Editar Invernadero' : 'Agregar Invernadero'),
+      title: const Text('Editar Invernadero'),
       content: TextField(
-        controller: TextEditingController(text: initialName),
+        controller: _controller,
         decoration: const InputDecoration(
           labelText: 'Nombre del invernadero',
           border: OutlineInputBorder(),
@@ -108,16 +175,17 @@ class _AddGreenhouseDialog extends StatelessWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () {
-            // TODO: AGREGAR LOGICA PARA GUARDAR INVERNADERO
+          onPressed: () async {
+            await widget.onConfirm(_controller.text);
             Navigator.of(context).pop();
           },
-          child: Text(isEdit ? 'Guardar' : 'Agregar'),
+          child: const Text('Guardar'),
         ),
         TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          onPressed: () => Navigator.of(context).pop(),
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.red,
+          ),
           child: const Text('Cancelar'),
         ),
       ],
