@@ -49,11 +49,11 @@ class _HomeView extends StatelessWidget {
             // Weather card
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(18),
+              padding: const EdgeInsets.only(left: 35, right: 35, top: 20, bottom: 20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: colors.primary, width: 2),
+                border: Border.all(color: colors.tertiary.withAlpha(185).withBlue(50).withRed(170), width: 3.5  ),
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
@@ -68,7 +68,7 @@ class _HomeView extends StatelessWidget {
                   const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('20°',
+                      Text('  20°',
                           style: TextStyle(
                               fontSize: 32, fontWeight: FontWeight.bold)),
                       SizedBox(height: 4),
@@ -79,12 +79,12 @@ class _HomeView extends StatelessWidget {
                   ),
                   Column(
                     children: [
-                      Icon(Icons.cloud, size: 48, color: colors.primary),
+                      Icon(Icons.wb_cloudy_outlined, size: 48, color:colors.primary.withRed(30).withGreen(100).withBlue(0).withAlpha(100)),
                       const SizedBox(height: 4),
                       Text('Nublado',
                           style: TextStyle(
                               fontSize: 16,
-                              color: colors.primary,
+                              color: colors.primary.withRed(30).withGreen(100).withBlue(0).withAlpha(130),
                               fontWeight: FontWeight.bold)),
                     ],
                   ),

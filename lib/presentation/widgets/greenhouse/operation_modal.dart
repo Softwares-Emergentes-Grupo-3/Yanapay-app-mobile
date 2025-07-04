@@ -1,7 +1,10 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 class OperationsModal extends StatefulWidget {
-  const OperationsModal({super.key});
+  final int greenhouseId;
+  const OperationsModal({super.key, required this.greenhouseId});
 
   @override
   State<OperationsModal> createState() => _OperationsModalState();
@@ -9,19 +12,60 @@ class OperationsModal extends StatefulWidget {
 
 class _OperationsModalState extends State<OperationsModal> {
   int _tabIndex = 0;
-  bool _irrigationEnabled = false;
+  final Map<String, bool> _irrigationStates = {
+    'humidity': false,
+    'fungicide': false,
+  };
+
+  Future<void> _handleSwitchChange(bool value, String mode) async {
+    setState(() {
+      _irrigationStates[mode] = value;
+    });
+
+    final url = mode == 'humidity'
+        ? (value
+        ? 'http://172.203.140.239:8081/api/v1/irrigation/start-watering'
+        : 'http://172.203.140.239:8081/api/v1/irrigation/stop-watering')
+        : (value
+        ? 'http://172.203.140.239:8081/api/v1/irrigation/start-fumigation'
+        : 'http://172.203.140.239:8081/api/v1/irrigation/stop-fumigation');
+
+    final body = jsonEncode({
+      'greenhouseId': widget.greenhouseId,
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+      print('Sent to $url with body: $body');
+      print('Response: ${response.statusCode} ${response.body}');
+    } catch (e) {
+      print('Error sending request: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final maxHeight = MediaQuery.of(context).size.height * 0.85;
+    final mode = _tabIndex == 0 ? 'humidity' : 'fungicide';
+    final bool currentValue = _irrigationStates[mode] ?? false;
+
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(16),
+      insetPadding: const EdgeInsets.only(left: 15, right: 15, bottom: 20),
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: maxHeight),
         child: SingleChildScrollView(
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.only(
+              top: 35,
+              left: 20,
+              right: 20,
+              bottom: 24,
+            ),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
@@ -33,13 +77,13 @@ class _OperationsModalState extends State<OperationsModal> {
                   tabIndex: _tabIndex,
                   onTabChanged: (i) => setState(() => _tabIndex = i),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 _IrrigationControl(
-                  enabled: _irrigationEnabled,
-                  onChanged: (v) => setState(() => _irrigationEnabled = v),
-                  mode: _tabIndex == 0 ? 'humidity' : 'fungicide',
+                  enabled: currentValue,
+                  onChanged: (v) => _handleSwitchChange(v, mode),
+                  mode: mode,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
               ],
             ),
           ),
@@ -65,7 +109,7 @@ class _OperationsTabs extends StatelessWidget {
           selected: tabIndex == 0,
           onTap: () => onTabChanged(0),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 5),
         _TabButton(
           label: 'Fungicide',
           selected: tabIndex == 1,
@@ -80,8 +124,11 @@ class _TabButton extends StatelessWidget {
   final String label;
   final bool selected;
   final VoidCallback onTap;
-  const _TabButton(
-      {required this.label, required this.selected, required this.onTap});
+  const _TabButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -112,8 +159,11 @@ class _IrrigationControl extends StatelessWidget {
   final bool enabled;
   final ValueChanged<bool> onChanged;
   final String mode; // 'humidity' or 'fungicide'
-  const _IrrigationControl(
-      {required this.enabled, required this.onChanged, required this.mode});
+  const _IrrigationControl({
+    required this.enabled,
+    required this.onChanged,
+    required this.mode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -136,9 +186,13 @@ class _IrrigationControl extends StatelessWidget {
           children: [
             Text(
               isHumidity ? 'Enabled Irrigation' : 'Enabled Fumigate',
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 5),
             Switch(
               value: enabled,
               onChanged: onChanged,
@@ -146,17 +200,19 @@ class _IrrigationControl extends StatelessWidget {
               inactiveThumbColor: Colors.grey,
               inactiveTrackColor: Colors.white,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 5),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              padding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
                 color: enabled ? const Color(0xFF8EDB00) : Colors.grey,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
-                enabled ? 'Active' : 'Inactive',
+                enabled ? '  Active ' : 'Inactive',
                 style: const TextStyle(
                   color: Colors.white,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -176,7 +232,10 @@ class _IrrigationControl extends StatelessWidget {
                 ? 'Allow the system to activate irrigation\nbased on soil moisture levels.'
                 : 'Allow the system to activate fumigation\nbased on system rules.',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Color(0xFF8EDB00), fontSize: 15),
+            style: const TextStyle(
+              color: Color(0xFF8EDB00),
+              fontSize: 15,
+            ),
           ),
         ),
       ],
