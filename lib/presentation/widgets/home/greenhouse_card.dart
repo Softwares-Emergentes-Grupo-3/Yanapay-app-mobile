@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class GreenhouseCard extends StatelessWidget {
-  final String id;
+  final int id;
   final String title;
   final VoidCallback onRefresh;
 
@@ -39,7 +39,7 @@ class GreenhouseCard extends StatelessWidget {
       url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        'id': int.parse(id),
+        'id': id,
         'name': newName}),
     );
     print('Response: ${response.body}');

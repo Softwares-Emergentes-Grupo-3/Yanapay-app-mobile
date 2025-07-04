@@ -81,7 +81,7 @@ class _GreenhouseGridState extends State<GreenhouseGrid> {
             ...greenhouses.map((gh) {
               return GestureDetector(
                 onTap: () {
-                  print('Invernadero seleccionado: ${gh.name}');
+                  print('Invernadero seleccionado: ${gh.name} - ${gh.id}');
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) =>
@@ -89,7 +89,11 @@ class _GreenhouseGridState extends State<GreenhouseGrid> {
                     ),
                   );
                 },
-                child: GreenhouseCard(id: gh.id, title: gh.name, onRefresh: fetchGreenhouses,),
+                child: GreenhouseCard(
+                  id: gh.id, // Corregido: convertir a String
+                  title: gh.name,
+                  onRefresh: fetchGreenhouses,
+                ),
               );
             }).toList(),
             // Tarjeta para agregar nuevo invernadero
