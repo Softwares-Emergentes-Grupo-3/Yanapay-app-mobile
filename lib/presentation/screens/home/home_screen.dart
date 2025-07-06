@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:yanapay_app_mobile/presentation/widgets/greenhouse/greenhouse_grid.dart';
-import 'package:yanapay_app_mobile/presentation/widgets/widgets.dart';
+import 'package:yanapay_app_mobile/presentation/widgets/shared/custom_appbar.dart';
+import 'package:yanapay_app_mobile/presentation/widgets/shared/custom_bottom_navigation.dart';
+import 'package:yanapay_app_mobile/providers/auth_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String name = 'home-screen';
@@ -10,7 +13,9 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: _HomeView(),
-      bottomNavigationBar: CustomBottomNavigation(currentIndex: 0,),
+      bottomNavigationBar: CustomBottomNavigation(
+        currentIndex: 0,
+      ),
     );
   }
 }
@@ -32,18 +37,23 @@ class _HomeView extends StatelessWidget {
             const CustomAppbar(),
             const SizedBox(height: 16),
             // Welcome text
-            RichText(
-              text: TextSpan(
-                style: const TextStyle(
-                    fontSize: 28,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
-                children: [
-                  const TextSpan(text: 'Bienvenido, '),
-                  TextSpan(
-                      text: 'Aaron', style: TextStyle(color: colors.primary)),
-                ],
-              ),
+            Consumer<AuthProvider>(
+              builder: (context, authProvider, _) {
+                return RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                        fontSize: 28,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
+                    children: [
+                      const TextSpan(text: 'Bienvenido, '),
+                      TextSpan(
+                          text: authProvider.userName ?? 'Usuario',
+                          style: TextStyle(color: colors.primary)),
+                    ],
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 20),
             // Weather card

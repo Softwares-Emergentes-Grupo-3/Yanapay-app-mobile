@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:yanapay_app_mobile/presentation/screens/camera-analysis/camara_analysis_screen.dart';
-import 'package:yanapay_app_mobile/presentation/screens/home/home_screen.dart';
 
 class CustomBottomNavigation extends StatelessWidget {
   final int currentIndex;
@@ -11,10 +9,10 @@ class CustomBottomNavigation extends StatelessWidget {
   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
       case 0:
-        context.goNamed(HomeScreen.name);
+        context.go('/home');
         break;
       case 1:
-        context.goNamed(CamaraAnalysisScreen.name);
+        context.go('/camara-analysis');
         break;
       case 2:
         context.go('/notifications');

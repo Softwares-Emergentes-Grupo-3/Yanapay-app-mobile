@@ -22,7 +22,8 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
 
   Future<void> _pickImageFromGallery(BuildContext context) async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -66,13 +67,14 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
   }
 
   Future<void> getRoot() async {
-    final uri = Uri.parse('http://yanapay-ia.gbgdenambygsefh6.eastus.azurecontainer.io:8000/');
+    final uri = Uri.parse(
+        'http://yanapay-ia.gbgdenambygsefh6.eastus.azurecontainer.io:8000/');
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {
-      print('Root OK: ${response.body}');
+      // Root endpoint accessible
     } else {
-      print('Error en root: ${response.statusCode}');
+      // Error accessing root endpoint
     }
   }
 
@@ -218,7 +220,8 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
                   child: Container(
                     height: 200,
                     decoration: BoxDecoration(
-                      color: isImageSelected ? Colors.grey.shade200 : Colors.white,
+                      color:
+                          isImageSelected ? Colors.grey.shade200 : Colors.white,
                       border: Border.all(
                         color: isImageSelected ? Colors.grey : green,
                         width: 2,
@@ -254,7 +257,8 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
               // Preview de la imagen seleccionada
               if (isImageSelected)
                 Padding(
-                  padding: const EdgeInsets.only(top: 20.0, left: 32.0, right: 32.0),
+                  padding:
+                      const EdgeInsets.only(top: 20.0, left: 32.0, right: 32.0),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.file(
@@ -274,49 +278,55 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
                         ? () => _sendImage(context)
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: (isImageSelected && !_imageSent && !_isUploading)
-                          ? green
-                          : Colors.blueGrey.shade200,
-                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                      backgroundColor:
+                          (isImageSelected && !_imageSent && !_isUploading)
+                              ? green
+                              : Colors.blueGrey.shade200,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 10),
                     ),
                     child: _isUploading
                         ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
                         : Text(
-                      _imageSent ? 'Imagen enviada' : 'Enviar imagen',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: (isImageSelected && !_imageSent && !_isUploading)
-                            ? Colors.white
-                            : Colors.grey,
-                      ),
-                    ),
+                            _imageSent ? 'Imagen enviada' : 'Enviar imagen',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: (isImageSelected &&
+                                      !_imageSent &&
+                                      !_isUploading)
+                                  ? Colors.white
+                                  : Colors.grey,
+                            ),
+                          ),
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton.icon(
                     onPressed: isImageSelected
                         ? () {
-                      setState(() {
-                        _pickedFile = null;
-                        _imageSent = false;
-                        _analysisResult = null;
-                        _analysisData = null;
-                      });
-                    }
+                            setState(() {
+                              _pickedFile = null;
+                              _imageSent = false;
+                              _analysisResult = null;
+                              _analysisData = null;
+                            });
+                          }
                         : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: isImageSelected
                           ? Colors.red.shade300
                           : Colors.red.shade100,
-                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 10),
                     ),
-                    icon: Icon(Icons.delete_forever, color: isImageSelected ? Colors.white : Colors.grey),
+                    icon: Icon(Icons.delete_forever,
+                        color: isImageSelected ? Colors.white : Colors.grey),
                     label: Text(
                       'Eliminar imagen',
                       style: TextStyle(
@@ -331,13 +341,14 @@ class _CamaraAnalysisScreenState extends State<CamaraAnalysisScreen> {
               ElevatedButton(
                 onPressed: _imageSent
                     ? () async {
-                  await getRoot();
-                  await _showAnalysisModal(context);
-                }
+                        await getRoot();
+                        await _showAnalysisModal(context);
+                      }
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _imageSent ? green : Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 120, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 120, vertical: 5),
                 ),
                 child: Text(
                   'Ver análisis',
