@@ -17,12 +17,18 @@ class AuthService {
 
   AuthService._();
 
+  Future<void> verifyUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+    print('User ID guardado: $userId');
+  }
+
   // Guardar sesión
   Future<void> saveSession({
     required String email,
     required String name,
     String? token,
-    String? userId,
+    int? userId,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userEmailKey, email);
@@ -34,7 +40,7 @@ class AuthService {
     }
 
     if (userId != null) {
-      await prefs.setString(_userIdKey, userId);
+      await prefs.setInt('userId', userId);
     }
   }
 
@@ -75,16 +81,16 @@ class AuthService {
   String _translateErrorMessage(String message) {
     final translations = {
       'Email is not registered or password is incorrect.':
-          'El correo no está registrado o la contraseña es incorrecta.',
+      'El correo no está registrado o la contraseña es incorrecta.',
       'Email is not registered or password is incorrect':
-          'El correo no está registrado o la contraseña es incorrecta.',
+      'El correo no está registrado o la contraseña es incorrecta.',
       'Invalid credentials': 'Credenciales inválidas',
       'User already exists': 'Ya existe una cuenta con este correo electrónico',
       'Email already registered': 'El correo ya está registrado',
       'Email already exists':
-          'Ya existe una cuenta con este correo electrónico',
+      'Ya existe una cuenta con este correo electrónico',
       'User with this email already exists':
-          'Ya existe una cuenta con este correo electrónico',
+      'Ya existe una cuenta con este correo electrónico',
       'Password too weak': 'La contraseña es muy débil',
       'Invalid email format': 'Formato de correo inválido',
       'Server error': 'Error del servidor',
@@ -162,6 +168,10 @@ class AuthService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Registro exitoso - normalizar estructura de datos
+
+        final rawUserId = data['userId'] ?? data['id'] ?? data['user_id'];
+        final userId = rawUserId is int ? rawUserId : int.tryParse(rawUserId.toString()) ?? 0;
+
         final normalizedData = {
           'userId': data['userId'] ?? data['id'] ?? data['user_id'],
           'email': data['email'] ?? data['userEmail'],
@@ -173,7 +183,7 @@ class AuthService {
         await saveSession(
           email: normalizedData['email'],
           name: '${normalizedData['firstName']} ${normalizedData['lastName']}',
-          userId: normalizedData['userId'].toString(),
+          userId: normalizedData['userId'],
         );
 
         return {
@@ -227,6 +237,10 @@ class AuthService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Login exitoso - normalizar estructura de datos
+
+        final rawUserId = data['userId'] ?? data['id'] ?? data['user_id'];
+        final userId = rawUserId is int ? rawUserId : int.tryParse(rawUserId.toString()) ?? 0;
+
         final normalizedData = {
           'userId': data['userId'] ?? data['id'] ?? data['user_id'],
           'email': data['email'] ?? data['userEmail'],
@@ -238,7 +252,7 @@ class AuthService {
         await saveSession(
           email: normalizedData['email'],
           name: '${normalizedData['firstName']} ${normalizedData['lastName']}',
-          userId: normalizedData['userId'].toString(),
+          userId: normalizedData['userId'],
         );
 
         return {

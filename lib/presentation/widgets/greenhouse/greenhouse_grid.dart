@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:yanapay_app_mobile/presentation/screens/screens.dart';
 import 'package:yanapay_app_mobile/presentation/widgets/widgets.dart';
-import 'package:yanapay_app_mobile/presentation/models/greenhouse_model.dart'; // Si decides separarlo
+import 'package:yanapay_app_mobile/presentation/models/greenhouse_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GreenhouseGrid extends StatefulWidget {
   const GreenhouseGrid({super.key});
@@ -22,16 +23,27 @@ class _GreenhouseGridState extends State<GreenhouseGrid> {
     fetchGreenhouses();
   }
 
+  Future<int?> _getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('userId');
+  }
+
   Future<void> fetchGreenhouses() async {
     try {
+      final userId = await _getUserId();
+      if (userId == null) {
+        throw Exception('No hay invernaderos del usuario');
+      }
+
       final response = await http.get(
-        Uri.parse('http://172.203.140.239:8081/api/v1/greenhouses'),
-        headers: {'Accept': 'application/json'},
+          Uri.parse('http://172.203.140.239:8081/api/v1/greenhouses/by-user/$userId'),
+          headers: {'Accept': 'application/json'},
       );
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
         final List<dynamic> data = jsonResponse['data'];
+        print('Datos recibidos:');
         print(data);
 
         setState(() {

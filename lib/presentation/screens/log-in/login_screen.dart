@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:yanapay_app_mobile/providers/auth_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String name = 'login-screen';
@@ -42,8 +43,6 @@ class _LoginViewState extends State<_LoginView> {
     });
   }
 
-  // Función de prueba simple para mostrar SnackBar
-
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -57,6 +56,15 @@ class _LoginViewState extends State<_LoginView> {
       );
 
       if (success) {
+        // Guardar el ID del usuario en SharedPreferences
+        final userId = authProvider.userId;
+        if (userId != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setInt('userId', userId);
+
+          final savedId = prefs.getInt('userId');
+          print('User ID guardado: $savedId');
+        }
         final successMsg =
             authProvider.successMessage ?? '¡Bienvenido de vuelta!';
 
@@ -141,7 +149,7 @@ class _LoginViewState extends State<_LoginView> {
                         'Bienvenido de vuelta',
                         style: TextStyle(
                           fontSize: 16,
-                          color: colors.onSurface.withValues(alpha: 0.7),
+                          color: colors.onSurface.withAlpha(180),
                         ),
                       ),
                     ],
@@ -168,7 +176,7 @@ class _LoginViewState extends State<_LoginView> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide:
-                                  BorderSide(color: colors.primary, width: 2),
+                              BorderSide(color: colors.primary, width: 2),
                             ),
                           ),
                           validator: (value) {
@@ -205,7 +213,7 @@ class _LoginViewState extends State<_LoginView> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide:
-                                  BorderSide(color: colors.primary, width: 2),
+                              BorderSide(color: colors.primary, width: 2),
                             ),
                           ),
                           validator: (value) {
@@ -226,7 +234,6 @@ class _LoginViewState extends State<_LoginView> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {
-                              // Mostrar SnackBar directamente
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Funcionalidad en desarrollo'),
@@ -253,7 +260,7 @@ class _LoginViewState extends State<_LoginView> {
                           height: 56,
                           child: ElevatedButton(
                             onPressed:
-                                authProvider.isLoading ? null : _handleLogin,
+                            authProvider.isLoading ? null : _handleLogin,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: colors.primary,
                               foregroundColor: colors.onPrimary,
@@ -264,21 +271,21 @@ class _LoginViewState extends State<_LoginView> {
                             ),
                             child: authProvider.isLoading
                                 ? SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          colors.onPrimary),
-                                    ),
-                                  )
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    colors.onPrimary),
+                              ),
+                            )
                                 : const Text(
-                                    'Iniciar Sesión',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
+                              'Iniciar Sesión',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
 
@@ -290,12 +297,12 @@ class _LoginViewState extends State<_LoginView> {
                             Expanded(child: Divider(color: colors.outline)),
                             Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
+                              const EdgeInsets.symmetric(horizontal: 16),
                               child: Text(
                                 'O',
                                 style: TextStyle(
                                   color:
-                                      colors.onSurface.withValues(alpha: 0.6),
+                                  colors.onSurface.withAlpha(150),
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -313,7 +320,7 @@ class _LoginViewState extends State<_LoginView> {
                             Text(
                               '¿No tienes cuenta? ',
                               style: TextStyle(
-                                color: colors.onSurface.withValues(alpha: 0.7),
+                                color: colors.onSurface.withAlpha(180),
                                 fontSize: 15,
                               ),
                             ),
@@ -323,7 +330,7 @@ class _LoginViewState extends State<_LoginView> {
                               },
                               style: TextButton.styleFrom(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
+                                const EdgeInsets.symmetric(horizontal: 8),
                               ),
                               child: Text(
                                 'Regístrate',

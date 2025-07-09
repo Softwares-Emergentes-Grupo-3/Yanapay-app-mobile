@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddGreenhouseCard extends StatelessWidget {
   final VoidCallback? onGreenhouseAdded;
-  const AddGreenhouseCard({super.key, this.onGreenhouseAdded}); // <-- aquí
+  const AddGreenhouseCard({super.key, this.onGreenhouseAdded});
 
   @override
   Widget build(BuildContext context) {
@@ -84,10 +85,33 @@ class _AddGreenhouseDialogState extends State<_AddGreenhouseDialog> {
     }
   }
 
+  Future<List<dynamic>> _fetchGreenhousesByUserId(int userId) async {
+    final url = Uri.parse('http://172.203.140.239:8081/api/v1/greenhouses/by-user/$userId');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data'] as List<dynamic>;
+    } else {
+      throw Exception('Error al cargar los invernaderos: ${response.body}');
+    }
+  }
+
+  Future<int?> _getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('userId');
+  }
+
   Future<void> _saveGreenhouse() async {
     final url = Uri.parse('http://172.203.140.239:8081/api/v1/greenhouses');
 
-    final userId = 10; // TODO: Reemplaza con el ID real del usuario
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+    print('User ID: $userId');
+    print('Name: $_name, Date: $_date');
+
+    if (userId == null) {
+      throw Exception('Usuario no autenticado');
+    }
 
     final body = jsonEncode({
       'name': _name,
@@ -95,11 +119,16 @@ class _AddGreenhouseDialogState extends State<_AddGreenhouseDialog> {
       'userId': userId,
     });
 
+    print('Request body: $body');
+
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: body,
     );
+
+    print('Status code: ${response.statusCode}');
+    print('Response body: ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = jsonDecode(response.body);

@@ -12,6 +12,7 @@ class AuthProvider extends ChangeNotifier {
   String? _userName;
   String? _errorMessage;
   String? _successMessage;
+  int? _userId;
 
   bool get isLoggedIn => _isLoggedIn;
   bool get isLoading => _isLoading;
@@ -19,6 +20,7 @@ class AuthProvider extends ChangeNotifier {
   String? get userName => _userName;
   String? get errorMessage => _errorMessage;
   String? get successMessage => _successMessage;
+  int? get userId => _userId;
 
   // Inicializar el provider verificando si hay sesión activa
   Future<void> initializeAuth() async {
@@ -31,11 +33,16 @@ class AuthProvider extends ChangeNotifier {
         final userData = await _authService.getUserData();
         _userEmail = userData['email'];
         _userName = userData['name'];
+        // También puedes inicializar el userId aquí si lo necesitas
+        if (userData['userId'] != null) {
+          _userId = int.tryParse(userData['userId'].toString());
+        }
       }
     } catch (e) {
       _isLoggedIn = false;
       _userEmail = null;
       _userName = null;
+      _userId = null;
     }
 
     _isLoading = false;
@@ -62,12 +69,17 @@ class AuthProvider extends ChangeNotifier {
     _isLoggedIn = true;
     _userEmail = userData['email'];
     _userName = '${userData['firstName']} ${userData['lastName']}';
+    _userId = userData['userId'] ?? userData['id'];
+
+    if (_userId is! int && _userId != null) {
+      _userId = int.tryParse(_userId.toString());
+    }
 
     if (isLogin) {
       _successMessage = '¡Bienvenido de vuelta, ${userData['firstName']}!';
     } else {
       _successMessage =
-          '¡Bienvenido a Yanapay, ${userData['firstName']}! Tu cuenta ha sido creada exitosamente.';
+      '¡Bienvenido a Yanapay, ${userData['firstName']}! Tu cuenta ha sido creada exitosamente.';
     }
   }
 
@@ -126,6 +138,8 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
 
+      print('Respuesta del backend: ${result['data']}');
+
       _isLoading = false;
 
       if (result['success']) {
@@ -156,6 +170,7 @@ class AuthProvider extends ChangeNotifier {
       _isLoggedIn = false;
       _userEmail = null;
       _userName = null;
+      _userId = null;
     } catch (e) {
       // Error silencioso para logout
     }
