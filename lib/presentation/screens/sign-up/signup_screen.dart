@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:yanapay_app_mobile/providers/auth_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpScreen extends StatelessWidget {
   static const String name = 'signup-screen';
@@ -82,6 +83,17 @@ class _SignUpViewState extends State<_SignUpView> {
       );
 
       if (success) {
+        // Guardar el ID del usuario en SharedPreferences solo si no es nulo
+        final userId = authProvider.userId;
+        if (userId != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setInt('userId', userId);
+
+          final savedId = prefs.getInt('userId');
+          // Mostrar el ID guardado en un SnackBar para verificación visual
+          print('Saved User ID: $savedId');
+        }
+
         final successMsg =
             authProvider.successMessage ?? '¡Cuenta creada exitosamente!';
 
@@ -258,7 +270,7 @@ class _SignUpViewState extends State<_SignUpView> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide:
-                                  BorderSide(color: colors.primary, width: 2),
+                              BorderSide(color: colors.primary, width: 2),
                             ),
                           ),
                           validator: (value) {
@@ -295,7 +307,7 @@ class _SignUpViewState extends State<_SignUpView> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide:
-                                  BorderSide(color: colors.primary, width: 2),
+                              BorderSide(color: colors.primary, width: 2),
                             ),
                           ),
                           validator: (value) {
@@ -332,7 +344,7 @@ class _SignUpViewState extends State<_SignUpView> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide:
-                                  BorderSide(color: colors.primary, width: 2),
+                              BorderSide(color: colors.primary, width: 2),
                             ),
                           ),
                           validator: (value) {
@@ -409,7 +421,7 @@ class _SignUpViewState extends State<_SignUpView> {
                           height: 56,
                           child: ElevatedButton(
                             onPressed:
-                                authProvider.isLoading ? null : _handleSignUp,
+                            authProvider.isLoading ? null : _handleSignUp,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: colors.primary,
                               foregroundColor: colors.onPrimary,
@@ -420,21 +432,21 @@ class _SignUpViewState extends State<_SignUpView> {
                             ),
                             child: authProvider.isLoading
                                 ? SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          colors.onPrimary),
-                                    ),
-                                  )
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    colors.onPrimary),
+                              ),
+                            )
                                 : const Text(
-                                    'Crear Cuenta',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
+                              'Crear Cuenta',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
 
@@ -457,7 +469,7 @@ class _SignUpViewState extends State<_SignUpView> {
                               },
                               style: TextButton.styleFrom(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
+                                const EdgeInsets.symmetric(horizontal: 8),
                               ),
                               child: Text(
                                 'Inicia sesión',
