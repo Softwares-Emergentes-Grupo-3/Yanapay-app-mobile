@@ -1,0 +1,4 @@
+API_URL=https://tuservidor.com/api
+API_KEY=tu_clave_de_api
+DATABASE_URL=https://tuservidor.com/db
+DEBUG_MODE=true

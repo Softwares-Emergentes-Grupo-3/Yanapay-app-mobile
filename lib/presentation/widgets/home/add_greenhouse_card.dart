@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddGreenhouseCard extends StatelessWidget {
-  const AddGreenhouseCard({super.key});
+  final VoidCallback? onGreenhouseAdded;
+  const AddGreenhouseCard({super.key, this.onGreenhouseAdded});
 
   @override
   Widget build(BuildContext context) {
@@ -11,15 +15,17 @@ class AddGreenhouseCard extends StatelessWidget {
       onTap: () {
         showDialog(
           context: context,
-          builder: (context) => const _AddGreenhouseDialog(),
+          builder: (context) => _AddGreenhouseDialog(
+            onGreenhouseAdded: onGreenhouseAdded,
+          ),
         );
       },
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              colors.primary,
-              colors.tertiary,
+              colors.primary.withRed(30).withGreen(100).withBlue(0).withAlpha(150),
+              colors.tertiary.withAlpha(185).withBlue(50).withRed(170),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -40,12 +46,19 @@ class AddGreenhouseCard extends StatelessWidget {
   }
 }
 
+// En la clase _AddGreenhouseDialog
 class _AddGreenhouseDialog extends StatefulWidget {
   final String? initialName;
   final String? initialDate;
   final bool isEdit;
-  const _AddGreenhouseDialog(
-      {this.initialName, this.initialDate, this.isEdit = false});
+  final VoidCallback? onGreenhouseAdded;
+
+  const _AddGreenhouseDialog({
+    this.initialName,
+    this.initialDate,
+    this.isEdit = false,
+    this.onGreenhouseAdded,
+  });
 
   @override
   State<_AddGreenhouseDialog> createState() => _AddGreenhouseDialogState();
@@ -54,14 +67,80 @@ class _AddGreenhouseDialog extends StatefulWidget {
 class _AddGreenhouseDialogState extends State<_AddGreenhouseDialog> {
   final _formKey = GlobalKey<FormState>();
   String? _name;
-  String? _date;
+  String? _date; // backend: yyyy-MM-dd
+  String? _dateDisplay; // interfaz: dd/MM/yyyy
 
   @override
   void initState() {
     super.initState();
     _name = widget.initialName;
     _date = widget.initialDate;
+    if (_date != null && _date!.isNotEmpty) {
+      // conversion de fechas
+      final parts = _date!.split('-');
+      if (parts.length == 3) {
+        _dateDisplay =
+        '${parts[2].padLeft(2, '0')}/${parts[1].padLeft(2, '0')}/${parts[0]}';
+      }
+    }
   }
+
+  Future<List<dynamic>> _fetchGreenhousesByUserId(int userId) async {
+    final url = Uri.parse('http://172.203.140.239:8081/api/v1/greenhouses/by-user/$userId');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data'] as List<dynamic>;
+    } else {
+      throw Exception('Error al cargar los invernaderos: ${response.body}');
+    }
+  }
+
+  Future<int?> _getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('userId');
+  }
+
+  Future<void> _saveGreenhouse() async {
+    final url = Uri.parse('http://172.203.140.239:8081/api/v1/greenhouses');
+
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+    print('User ID: $userId');
+    print('Name: $_name, Date: $_date');
+
+    if (userId == null) {
+      throw Exception('Usuario no autenticado');
+    }
+
+    final body = jsonEncode({
+      'name': _name,
+      'plantingDate': _date,
+      'userId': userId,
+    });
+
+    print('Request body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: body,
+    );
+
+    print('Status code: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final data = jsonDecode(response.body);
+      print('Invernadero guardado: $data');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Invernadero guardado con éxito')),
+      );
+    } else {
+      throw Exception('Error al guardar el invernadero: ${response.body}');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +192,7 @@ class _AddGreenhouseDialogState extends State<_AddGreenhouseDialog> {
                       ),
                       child: Center(
                         child:
-                            Icon(Icons.upload, size: 48, color: colors.primary),
+                        Icon(Icons.upload, size: 48, color: colors.primary),
                       ),
                     ),
                   ),
@@ -151,14 +230,16 @@ class _AddGreenhouseDialogState extends State<_AddGreenhouseDialog> {
                             );
                             if (picked != null) {
                               setState(() {
-                                _date =
-                                    "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                                _dateDisplay =
+                                "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                                _date = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
                               });
                             }
                           },
                           child: AbsorbPointer(
                             child: TextFormField(
-                              controller: TextEditingController(text: _date),
+                              controller:
+                              TextEditingController(text: _dateDisplay),
                               decoration: const InputDecoration(
                                 hintText: 'DD/MM/YYYY',
                                 border: OutlineInputBorder(),
@@ -166,9 +247,9 @@ class _AddGreenhouseDialogState extends State<_AddGreenhouseDialog> {
                                     horizontal: 12, vertical: 8),
                               ),
                               validator: (value) =>
-                                  (_date == null || _date!.isEmpty)
-                                      ? 'Required'
-                                      : null,
+                              (_date == null || _date!.isEmpty)
+                                  ? 'Required'
+                                  : null,
                             ),
                           ),
                         ),
@@ -184,13 +265,20 @@ class _AddGreenhouseDialogState extends State<_AddGreenhouseDialog> {
                           borderRadius: BorderRadius.circular(8)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _formKey.currentState!.save();
-                        // TODO: GUARDADO DE DATOS
-                        Navigator.of(context).pop();
-                      }
-                    },
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          try {
+                            await _saveGreenhouse();
+                            widget.onGreenhouseAdded?.call(); // <-- Llama aquí el callback
+                            Navigator.of(context).pop();
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error al guardar: $e')),
+                            );
+                          }
+                        }
+                      },
                     child: Text(widget.isEdit ? 'Save' : 'Add',
                         style: const TextStyle(fontSize: 18)),
                   ),
